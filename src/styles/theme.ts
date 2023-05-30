@@ -23,7 +23,7 @@ export default {
     warning: '#a60432'
   },
   spacings: {
-    xxsmall: 0.8,
+    xxsmall: 8,
     xsmall: 16,
     small: 24,
     medium: 32,
