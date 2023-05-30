@@ -1,11 +1,16 @@
 import { StatusBar } from 'expo-status-bar'
-import { Text, View } from 'react-native'
+import { Text } from 'react-native'
+import { ThemeProvider } from 'styled-components/native'
+
+import { Button } from './src/components'
+import theme from './src/styles/theme'
 
 export default function App() {
   return (
-    <View>
-      <Text>Parrot App</Text>
+    <ThemeProvider theme={theme}>
       <StatusBar style="auto" />
-    </View>
+      <Text>Parrot App</Text>
+      <Button />
+    </ThemeProvider>
   )
 }
