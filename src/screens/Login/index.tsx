@@ -1,8 +1,11 @@
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { Platform } from 'react-native'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Button, Container, Input, Logo } from '../../components'
+import { Button, Input, Logo, Separator } from '../../components'
+
+import * as S from './styles'
 
 const loginUserSchema = z.object({
   email: z
@@ -12,41 +15,60 @@ const loginUserSchema = z.object({
   password: z.string().nonempty('A senha é obrgatória')
 })
 
-// type LoginUserFormData = z.infer<typeof loginUserSchema>
-type FormData = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [x: string]: any
-}
+type LoginUserFormData = z.infer<typeof loginUserSchema>
 
 export function Login() {
   const {
     control,
     handleSubmit,
     formState: { errors }
-  } = useForm<FormData>({
+  } = useForm<LoginUserFormData>({
     resolver: zodResolver(loginUserSchema)
   })
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<LoginUserFormData> = async (data) => {
     console.log({ data })
   }
 
   return (
-    <Container>
-      <Logo />
-      <Input
-        placeholder="Digite seu email"
-        name="email"
-        control={control}
-        error={errors?.email?.message as string}
-      />
-      <Input
-        placeholder="*******"
-        name="password"
-        control={control}
-        error={errors?.password?.message as string}
-      />
-      <Button text="Entrar" onPress={handleSubmit(onSubmit)} />
-    </Container>
+    <S.KeyboardAvoidingViewStyled
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <S.ScrollViewStyled showsVerticalScrollIndicator={false}>
+        <S.Content>
+          <Logo />
+          <Separator size={100} />
+          <Controller
+            control={control}
+            render={({ field: { value, onChange, ref } }) => (
+              <Input
+                value={value}
+                onChange={onChange}
+                placeholder="Digite seu email"
+                error={errors?.email?.message}
+                ref={ref}
+              />
+            )}
+            name="email"
+          />
+          <Separator size={24} />
+          <Controller
+            control={control}
+            render={({ field: { value, onChange, ref } }) => (
+              <Input
+                value={value}
+                onChange={onChange}
+                placeholder="Digite seu email"
+                error={errors?.password?.message}
+                ref={ref}
+              />
+            )}
+            name="password"
+          />
+          <Separator size={32} />
+          <Button text="Entrar" onPress={handleSubmit(onSubmit)} />
+        </S.Content>
+      </S.ScrollViewStyled>
+    </S.KeyboardAvoidingViewStyled>
   )
 }
