@@ -72,7 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [])
 
   const logout = useCallback(async () => {
-    await AsyncStorage.clear()
+    await AsyncStorage.removeItem('parrot:token')
+    await AsyncStorage.removeItem('parrot:userId')
   }, [])
 
   return (

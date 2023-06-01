@@ -4,12 +4,13 @@ import * as S from './styles'
 
 type ButtonProps = {
   text: string
+  small?: boolean
 } & TouchableOpacityProps
 
-export const Button: React.FC<ButtonProps> = ({ text, ...props }) => {
+export const Button: React.FC<ButtonProps> = ({ text, small, ...props }) => {
   return (
-    <S.Button {...props}>
-      <S.Text>{text}</S.Text>
+    <S.Button small={small} {...props}>
+      <S.Text small={small}>{text}</S.Text>
     </S.Button>
   )
 }

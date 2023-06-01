@@ -1,9 +1,10 @@
-import { Platform } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Toast from 'react-native-toast-message'
+import { useTheme } from 'styled-components/native'
 
 import { LoginBody, useAuth } from '../../context/AuthContext'
 import { AuthStackParamList } from '../../routes/types'
@@ -11,8 +12,6 @@ import { AuthStackParamList } from '../../routes/types'
 import { Button, Input, Logo, Separator, Text } from '../../components'
 
 import * as S from './styles'
-import { useTheme } from 'styled-components/native'
-import { TouchableOpacity } from 'react-native'
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>
 

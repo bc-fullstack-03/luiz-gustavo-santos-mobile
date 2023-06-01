@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native'
+import { Text } from 'react-native'
 
 import { useAuth } from '../../context/AuthContext'
-import { Button } from '../../components'
+import { Button, Container } from '../../components'
 
 export function Home() {
   const { logout } = useAuth()
@@ -11,9 +11,9 @@ export function Home() {
   }
 
   return (
-    <View>
+    <Container>
       <Text>Home</Text>
       <Button text="Sair" onPress={handleLogout} />
-    </View>
+    </Container>
   )
 }
