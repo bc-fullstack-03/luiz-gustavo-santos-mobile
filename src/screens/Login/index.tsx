@@ -2,13 +2,17 @@ import { Platform } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Toast from 'react-native-toast-message'
 
 import { LoginBody, useAuth } from '../../context/AuthContext'
 import { AuthStackParamList } from '../../routes/types'
 
-import { Button, Input, Logo, Separator } from '../../components'
+import { Button, Input, Logo, Separator, Text } from '../../components'
 
 import * as S from './styles'
+import { useTheme } from 'styled-components/native'
+import { TouchableOpacity } from 'react-native'
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>
 
@@ -19,13 +23,22 @@ const loginUserSchema = yup.object({
 
 export function Login({ navigation }: Props) {
   const { login } = useAuth()
+  const theme = useTheme()
 
   const onSubmit = async (data: LoginBody) => {
     try {
       await login(data)
       navigation.navigate('Home')
+      Toast.show({
+        type: 'success',
+        text1: 'Login com sucesso'
+      })
     } catch (error) {
       console.log('Login Error', error)
+      Toast.show({
+        type: 'error',
+        text1: 'Credenciais inválidas'
+      })
     }
   }
 
@@ -36,7 +49,13 @@ export function Login({ navigation }: Props) {
       <S.ScrollViewStyled showsVerticalScrollIndicator={false}>
         <S.Content>
           <Logo />
-          <Separator size={100} />
+          <Separator size={16} />
+          <Text size="xxlarge" bold>
+            Sysmap Parrot
+          </Text>
+          <Separator size={8} />
+          <Text color={theme.colors.gray500}>Faça login e comece a usar!</Text>
+          <Separator size={32} />
           <Formik
             initialValues={{ email: '', password: '' }}
             validationSchema={loginUserSchema}
@@ -46,29 +65,53 @@ export function Login({ navigation }: Props) {
             {({ values, handleChange, handleSubmit, errors }) => (
               <>
                 <Input
-                  label="Email"
+                  label="Endereço de e-mail"
                   value={values.email}
                   onChangeText={handleChange('email')}
                   placeholder="Digite seu email"
                   keyboardType="email-address"
-                  error={errors?.email}
+                  errorMessage={errors?.email}
                   autoCorrect={false}
+                  autoCapitalize="none"
+                  icon={
+                    <Ionicons
+                      name="mail-outline"
+                      size={24}
+                      color={theme.colors.gray500}
+                    />
+                  }
                 />
 
                 <Separator size={24} />
 
                 <Input
-                  label="Password"
+                  label="Sua Senha"
                   value={values.password}
                   onChangeText={handleChange('password')}
-                  placeholder="Digite seu email"
+                  placeholder="*******"
                   secureTextEntry
-                  error={errors?.password}
+                  errorMessage={errors?.password}
                   autoCorrect={false}
+                  autoCapitalize="none"
+                  icon={
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={24}
+                      color={theme.colors.gray500}
+                    />
+                  }
                 />
 
                 <Separator size={32} />
                 <Button text="Entrar" onPress={() => handleSubmit()} />
+                <Separator size={16} />
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}
+                >
+                  <Text size="xsmall" color={theme.colors.gray500}>
+                    Não possui uma conta? Crie uma agora!
+                  </Text>
+                </TouchableOpacity>
               </>
             )}
           </Formik>

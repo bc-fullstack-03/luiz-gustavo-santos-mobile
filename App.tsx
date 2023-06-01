@@ -2,6 +2,7 @@ import 'react-native-gesture-handler'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider } from 'styled-components/native'
+import Toast from 'react-native-toast-message'
 
 import { AuthProvider } from './src/context/AuthContext'
 import { Routes } from './src/routes'
@@ -15,6 +16,7 @@ export default function App() {
         <ThemeProvider theme={theme}>
           <StatusBar style="light" translucent />
           <Routes />
+          <Toast />
         </ThemeProvider>
       </SafeAreaProvider>
     </AuthProvider>
