@@ -1,7 +1,11 @@
 import styled, { css } from 'styled-components/native'
 import { RFValue } from 'react-native-responsive-fontsize'
 
-export const Wrapper = styled.TextInput`
+export const Wrapper = styled.View`
+  width: 100%;
+`
+
+export const TextInput = styled.TextInput`
   ${({ theme }) => css`
     width: 100%;
     background: ${theme.colors.gray900};
@@ -12,10 +16,16 @@ export const Wrapper = styled.TextInput`
   `}
 `
 
+export const Label = styled.Text`
+  ${({ theme }) => css`
+    color: ${theme.colors.gray100};
+    font-size: ${RFValue(theme.font.sizes.medium)}px;
+    margin-bottom: ${RFValue(theme.spacings.xxsmall / 2)}px;
+  `}
+`
+
 export const Error = styled.Text`
   ${({ theme }) => css`
-    width: 100%;
-    text-align: left;
     color: ${theme.colors.warning};
     margin-top: ${RFValue(theme.spacings.xxsmall / 2)}px;
     font-size: ${RFValue(theme.font.sizes.small)}px;

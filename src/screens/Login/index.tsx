@@ -1,33 +1,32 @@
 import { Platform } from 'react-native'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { Formik } from 'formik'
+import * as yup from 'yup'
+
+import { LoginBody, useAuth } from '../../context/AuthContext'
+import { AuthStackParamList } from '../../routes/types'
 
 import { Button, Input, Logo, Separator } from '../../components'
 
 import * as S from './styles'
 
-const loginUserSchema = z.object({
-  email: z
-    .string()
-    .nonempty('O email é obrigatório')
-    .email('Formato de email inválido'),
-  password: z.string().nonempty('A senha é obrgatória')
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>
+
+const loginUserSchema = yup.object({
+  email: yup.string().required('Email é obrigatório.'),
+  password: yup.string().required('A senha é obrigatória.')
 })
 
-type LoginUserFormData = z.infer<typeof loginUserSchema>
+export function Login({ navigation }: Props) {
+  const { login } = useAuth()
 
-export function Login() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<LoginUserFormData>({
-    resolver: zodResolver(loginUserSchema)
-  })
-
-  const onSubmit: SubmitHandler<LoginUserFormData> = async (data) => {
-    console.log({ data })
+  const onSubmit = async (data: LoginBody) => {
+    try {
+      await login(data)
+      navigation.navigate('Home')
+    } catch (error) {
+      console.log('Login Error', error)
+    }
   }
 
   return (
@@ -38,35 +37,41 @@ export function Login() {
         <S.Content>
           <Logo />
           <Separator size={100} />
-          <Controller
-            control={control}
-            render={({ field: { value, onChange, ref } }) => (
-              <Input
-                value={value}
-                onChange={onChange}
-                placeholder="Digite seu email"
-                error={errors?.email?.message}
-                ref={ref}
-              />
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={loginUserSchema}
+            enableReinitialize
+            onSubmit={onSubmit}
+          >
+            {({ values, handleChange, handleSubmit, errors }) => (
+              <>
+                <Input
+                  label="Email"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  placeholder="Digite seu email"
+                  keyboardType="email-address"
+                  error={errors?.email}
+                  autoCorrect={false}
+                />
+
+                <Separator size={24} />
+
+                <Input
+                  label="Password"
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  placeholder="Digite seu email"
+                  secureTextEntry
+                  error={errors?.password}
+                  autoCorrect={false}
+                />
+
+                <Separator size={32} />
+                <Button text="Entrar" onPress={() => handleSubmit()} />
+              </>
             )}
-            name="email"
-          />
-          <Separator size={24} />
-          <Controller
-            control={control}
-            render={({ field: { value, onChange, ref } }) => (
-              <Input
-                value={value}
-                onChange={onChange}
-                placeholder="Digite seu email"
-                error={errors?.password?.message}
-                ref={ref}
-              />
-            )}
-            name="password"
-          />
-          <Separator size={32} />
-          <Button text="Entrar" onPress={handleSubmit(onSubmit)} />
+          </Formik>
         </S.Content>
       </S.ScrollViewStyled>
     </S.KeyboardAvoidingViewStyled>

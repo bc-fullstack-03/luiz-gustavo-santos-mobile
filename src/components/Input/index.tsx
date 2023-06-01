@@ -1,31 +1,22 @@
-import { TextInputProps, TextInput } from 'react-native'
+import { TextInputProps } from 'react-native'
+
 import { useTheme } from 'styled-components/native'
 
 import * as S from './styles'
 
 type InputProps = {
-  placeholder?: string
+  label?: string
   error?: string
-  ref?: React.Ref<TextInput>
 } & TextInputProps
 
-export const Input: React.FC<InputProps> = ({
-  placeholder,
-  error,
-  ref,
-  ...props
-}) => {
+export const Input: React.FC<InputProps> = ({ label, error, ...props }) => {
   const { colors } = useTheme()
-  return (
-    <>
-      <S.Wrapper
-        placeholder={placeholder}
-        placeholderTextColor={colors.gray100}
-        ref={ref}
-        {...props}
-      />
 
-      {!!error && <S.Error>{error}</S.Error>}
-    </>
+  return (
+    <S.Wrapper>
+      {!!label && <S.Label>{label}</S.Label>}
+      <S.TextInput placeholderTextColor={colors.gray100} {...props} />
+      {error && <S.Error>{error}</S.Error>}
+    </S.Wrapper>
   )
 }

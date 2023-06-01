@@ -3,17 +3,20 @@ import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider } from 'styled-components/native'
 
-import theme from './src/styles/theme'
+import { AuthProvider } from './src/context/AuthContext'
+import { Routes } from './src/routes'
 
-import { AuthRoutes } from './src/routes/auth.routes'
+import theme from './src/styles/theme'
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <ThemeProvider theme={theme}>
-        <StatusBar style="light" translucent />
-        <AuthRoutes />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <SafeAreaProvider>
+        <ThemeProvider theme={theme}>
+          <StatusBar style="light" translucent />
+          <Routes />
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </AuthProvider>
   )
 }

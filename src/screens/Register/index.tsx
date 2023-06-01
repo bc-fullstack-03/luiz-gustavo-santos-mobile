@@ -1,34 +1,23 @@
 import { Platform } from 'react-native'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { Formik } from 'formik'
+import * as yup from 'yup'
 
 import { Button, Input, Logo, Separator } from '../../components'
 
 import * as S from './styles'
 
-const loginUserSchema = z.object({
-  name: z.string().min(3, 'O nome deve conter no mínimo 3 letras'),
-  email: z
+const registerUserSchema = yup.object({
+  name: yup.string().min(3, 'O nome deve ter no mínimo 3 letras'),
+  email: yup.string().email('Email inválido').required('Email é obrigatório.'),
+  password: yup
     .string()
-    .nonempty('O email é obrigatório')
-    .email('Formato de email inválido'),
-  password: z.string().min(3, 'A senha deve conter no mínimo 8 digitos')
+    .min(6, 'A senha deve conter no mínimo 6 caracteres')
+    .required('A senha é obrigatória.')
 })
 
-type RegisterUserFormData = z.infer<typeof loginUserSchema>
-
 export function Register() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<RegisterUserFormData>({
-    resolver: zodResolver(loginUserSchema)
-  })
-
-  const onSubmit: SubmitHandler<RegisterUserFormData> = async (data) => {
-    console.log({ data })
+  const onSubmit = async () => {
+    console.log('Register form')
   }
 
   return (
@@ -39,46 +28,49 @@ export function Register() {
         <S.Content>
           <Logo />
           <Separator size={100} />
-          <Controller
-            control={control}
-            render={({ field: { value, onChange } }) => (
-              <Input
-                value={value}
-                onChange={onChange}
-                placeholder="Digite seu nome"
-                error={errors?.name?.message}
-              />
+          <Formik
+            initialValues={{ name: '', email: '', password: '' }}
+            validationSchema={registerUserSchema}
+            enableReinitialize
+            onSubmit={onSubmit}
+          >
+            {({ values, handleChange, handleSubmit, errors }) => (
+              <>
+                <Input
+                  label="Nome"
+                  value={values.name}
+                  onChangeText={handleChange('name')}
+                  placeholder="Digite seu nome"
+                  error={errors?.name}
+                  autoCorrect={false}
+                />
+                <Input
+                  label="Email"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  placeholder="Digite seu email"
+                  keyboardType="email-address"
+                  error={errors?.email}
+                  autoCorrect={false}
+                />
+
+                <Separator size={24} />
+
+                <Input
+                  label="Senha"
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  placeholder="**********"
+                  secureTextEntry
+                  error={errors?.password}
+                  autoCorrect={false}
+                />
+
+                <Separator size={32} />
+                <Button text="Entrar" onPress={() => handleSubmit()} />
+              </>
             )}
-            name="name"
-          />
-          <Separator size={24} />
-          <Controller
-            control={control}
-            render={({ field: { value, onChange } }) => (
-              <Input
-                value={value}
-                onChange={onChange}
-                placeholder="Digite seu email"
-                error={errors?.email?.message}
-              />
-            )}
-            name="email"
-          />
-          <Separator size={24} />
-          <Controller
-            control={control}
-            render={({ field: { value, onChange } }) => (
-              <Input
-                value={value}
-                onChange={onChange}
-                placeholder="Digite seu email"
-                error={errors?.email?.message}
-              />
-            )}
-            name="password"
-          />
-          <Separator size={32} />
-          <Button text="Cadastrar" onPress={handleSubmit(onSubmit)} />
+          </Formik>
         </S.Content>
       </S.ScrollViewStyled>
     </S.KeyboardAvoidingViewStyled>
