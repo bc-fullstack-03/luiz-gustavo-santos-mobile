@@ -1,0 +1,5 @@
+export { Friends } from './Friends'
+export { Home } from './Home'
+export { Login } from './Login'
+export { Profile } from './Profile'
+export { Register } from './Register'
