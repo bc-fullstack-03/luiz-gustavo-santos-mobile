@@ -1,10 +1,23 @@
-import { Platform } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Toast from 'react-native-toast-message'
+import { useTheme } from 'styled-components/native'
 
-import { Button, Input, Logo, Separator } from '../../components'
+import api from '../../services/api'
+import { Button, Input, Logo, Separator, Text } from '../../components'
+import { AuthStackParamList } from '../../routes/types'
 
 import * as S from './styles'
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>
+type FromData = {
+  name: string
+  email: string
+  password: string
+}
 
 const registerUserSchema = yup.object({
   name: yup.string().min(3, 'O nome deve ter no mínimo 3 letras'),
@@ -15,9 +28,23 @@ const registerUserSchema = yup.object({
     .required('A senha é obrigatória.')
 })
 
-export function Register() {
-  const onSubmit = async () => {
-    console.log('Register form')
+export function Register({ navigation }: Props) {
+  const theme = useTheme()
+  const onSubmit = async (data: FromData) => {
+    try {
+      await api.post('/user/create', data)
+      navigation.navigate('Login')
+      Toast.show({
+        type: 'success',
+        text1: 'Cadastrado com sucesso'
+      })
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao cadastrar.'
+      })
+      console.log('Register error', error)
+    }
   }
 
   return (
@@ -27,7 +54,13 @@ export function Register() {
       <S.ScrollViewStyled showsVerticalScrollIndicator={false}>
         <S.Content>
           <Logo />
-          <Separator size={100} />
+          <Separator size={16} />
+          <Text size="xxlarge" bold>
+            Sysmap Parrot
+          </Text>
+          <Separator size={8} />
+          <Text color={theme.colors.gray500}>Cadastre-se e comece a usar!</Text>
+          <Separator size={32} />
           <Formik
             initialValues={{ name: '', email: '', password: '' }}
             validationSchema={registerUserSchema}
@@ -37,37 +70,70 @@ export function Register() {
             {({ values, handleChange, handleSubmit, errors }) => (
               <>
                 <Input
-                  label="Nome"
+                  label="Seu nome"
                   value={values.name}
                   onChangeText={handleChange('name')}
                   placeholder="Digite seu nome"
-                  error={errors?.name}
+                  errorMessage={errors?.name}
                   autoCorrect={false}
+                  autoCapitalize="none"
+                  icon={
+                    <Ionicons
+                      name="person-outline"
+                      size={24}
+                      color={theme.colors.gray500}
+                    />
+                  }
                 />
+                <Separator size={24} />
+
                 <Input
-                  label="Email"
+                  label="Endereço de e-mail"
                   value={values.email}
                   onChangeText={handleChange('email')}
                   placeholder="Digite seu email"
                   keyboardType="email-address"
-                  error={errors?.email}
+                  errorMessage={errors?.email}
                   autoCorrect={false}
+                  autoCapitalize="none"
+                  icon={
+                    <Ionicons
+                      name="mail-outline"
+                      size={24}
+                      color={theme.colors.gray500}
+                    />
+                  }
                 />
 
                 <Separator size={24} />
 
                 <Input
-                  label="Senha"
+                  label="Sua senha"
                   value={values.password}
                   onChangeText={handleChange('password')}
                   placeholder="**********"
                   secureTextEntry
-                  error={errors?.password}
+                  errorMessage={errors?.password}
                   autoCorrect={false}
+                  autoCapitalize="none"
+                  icon={
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={24}
+                      color={theme.colors.gray500}
+                    />
+                  }
                 />
 
                 <Separator size={32} />
                 <Button text="Entrar" onPress={() => handleSubmit()} />
+                <Separator size={16} />
+
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                  <Text size="xsmall" color={theme.colors.gray500}>
+                    Já possui uma conta? Faça login!
+                  </Text>
+                </TouchableOpacity>
               </>
             )}
           </Formik>

@@ -5,14 +5,31 @@ export const Wrapper = styled.View`
   width: 100%;
 `
 
+type Props = {
+  hasIcon?: boolean
+}
+
+export const ContainerInput = styled.View<Props>`
+  ${({ theme, hasIcon }) => css`
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    background: ${theme.colors.gray900};
+    border-radius: 4px;
+    ${hasIcon &&
+    css`
+      padding-left: ${RFValue(theme.spacings.xxsmall)}px;
+    `}
+  `}
+`
+
 export const TextInput = styled.TextInput`
   ${({ theme }) => css`
-    width: 100%;
-    background: ${theme.colors.gray900};
+    flex: 1;
+    background: transparent;
     color: ${theme.colors.white};
     padding: ${RFValue(theme.spacings.xsmall)}px;
     font-size: ${RFValue(theme.font.sizes.medium)}px;
-    border-radius: 4px;
   `}
 `
 

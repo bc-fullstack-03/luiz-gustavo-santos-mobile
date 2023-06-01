@@ -1,7 +1,7 @@
-import { Image } from 'react-native'
+import { ImageStyled } from './styles'
 
 import logo from '../../../assets/parrot-logo.png'
 
 export const Logo = () => {
-  return <Image source={logo} />
+  return <ImageStyled source={logo} resizeMode="contain" resizeMethod="scale" />
 }

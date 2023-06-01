@@ -8,6 +8,7 @@ import {
 } from 'react'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Toast from 'react-native-toast-message'
 
 import api from '../services/api'
 
@@ -64,6 +65,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await AsyncStorage.setItem('parrot:userId', data.id)
     setToken(data.token)
     setUserId(data.id)
+    Toast.show({
+      type: 'success',
+      text1: 'Login com sucesso'
+    })
   }, [])
 
   const logout = useCallback(async () => {
