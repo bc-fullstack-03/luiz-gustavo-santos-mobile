@@ -1,6 +1,8 @@
+export { Avatar } from './Avatar'
 export { Button } from './Button'
 export { Container } from './Container'
 export { Input } from './Input'
+export { Loading } from './Loading'
 export { Logo } from './Logo'
 export { Separator } from './Separator'
 export { Text, Props } from './Text'
