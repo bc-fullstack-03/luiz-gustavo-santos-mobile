@@ -7,19 +7,21 @@ type UserHeadingProps = {
   username: string
   totalFollowers: number
   totalFollowing: number
+  handleNavigation?: () => void
 }
 
 export const UserHeading: React.FC<UserHeadingProps> = ({
   totalFollowers,
   totalFollowing,
-  username
+  username,
+  handleNavigation
 }) => {
   const { colors } = useTheme()
   return (
     <>
       <S.Wrapper>
         <S.Icon name="person-circle-outline" size={28} />
-        <Text size="large" color={colors.white}>
+        <Text size="large" bold color={colors.white} onPress={handleNavigation}>
           {username}
         </Text>
       </S.Wrapper>

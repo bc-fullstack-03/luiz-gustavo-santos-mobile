@@ -1,24 +1,28 @@
 import { useState, useEffect } from 'react'
-import { ActivityIndicator, FlatList } from 'react-native'
+import { FlatList } from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useTheme } from 'styled-components/native'
 
 import api from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 
-import { Button, Separator, Text, UserHeading } from '../../components'
+import { Button, Loading, Separator, Text, UserHeading } from '../../components'
+import { BottomStackParamList } from '../../routes/types'
 
 import * as S from './styles'
-import { useTheme } from 'styled-components/native'
-import { useAuth } from '../../context/AuthContext'
 
 export type User = {
   id: string
   name: string
   email: string
-  photoUrl: null
+  photoUrl: string | undefined
   followers: string[]
   following: string[]
 }
 
-export function Friends() {
+type Props = NativeStackScreenProps<BottomStackParamList, 'Friends'>
+
+export function Friends({ navigation }: Props) {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const theme = useTheme()
@@ -70,9 +74,7 @@ export function Friends() {
 
   return (
     <S.Wrapper>
-      {loading && (
-        <ActivityIndicator color={theme.colors.primary} size="large" />
-      )}
+      {loading && <Loading color={theme.colors.primary} size="large" />}
       <FlatList
         data={filteredList}
         renderItem={({ item }) => (
@@ -81,6 +83,11 @@ export function Friends() {
               username={item.name}
               totalFollowers={item.followers.length ?? 0}
               totalFollowing={item.following.length ?? 0}
+              handleNavigation={() =>
+                navigation.navigate('Profile', {
+                  userId: item.id
+                })
+              }
             />
             <Separator size={16} />
             <Button
