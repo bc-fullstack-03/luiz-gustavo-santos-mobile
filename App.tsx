@@ -11,14 +11,14 @@ import theme from './src/styles/theme'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <SafeAreaProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
         <ThemeProvider theme={theme}>
           <StatusBar style="light" translucent />
           <Routes />
           <Toast />
         </ThemeProvider>
-      </SafeAreaProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   )
 }

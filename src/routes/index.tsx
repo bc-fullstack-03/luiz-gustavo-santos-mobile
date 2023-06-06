@@ -5,10 +5,10 @@ import { AuthRoutes } from './auth.routes'
 import { useAuth } from '../context/AuthContext'
 
 export const Routes = () => {
-  const { token, userId } = useAuth()
+  const { token } = useAuth()
   return (
     <NavigationContainer>
-      {token && userId ? <AppRoutes /> : <AuthRoutes />}
+      {token ? <AppRoutes /> : <AuthRoutes />}
     </NavigationContainer>
   )
 }

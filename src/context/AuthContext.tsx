@@ -20,7 +20,7 @@ type AuthContextProps = {
   login: (data: LoginBody) => Promise<void>
   logout: () => Promise<void>
   token: string | null
-  userId: string | null
+  user: LoggedUser | null
 }
 
 export type LoginBody = {
@@ -29,8 +29,13 @@ export type LoginBody = {
 }
 
 export type LoginResponse = {
-  id: string
-  token: string
+  accessToken: string
+}
+
+type LoggedUser = {
+  profileId: string
+  name: string
+  userId: string
 }
 
 export const AuthContext = createContext<AuthContextProps>(
@@ -39,45 +44,67 @@ export const AuthContext = createContext<AuthContextProps>(
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null)
-  const [userId, setUserId] = useState<string | null>(null)
+  const [user, setUser] = useState<LoggedUser | null>(null)
 
   useEffect(() => {
     const getStorageData = async () => {
       const storageToken = await AsyncStorage.getItem('parrot:token')
-      const storageUserId = await AsyncStorage.getItem('parrot:userId')
+      const storageUser = await AsyncStorage.getItem('parrot:user')
 
-      if (storageToken && storageUserId) {
+      if (storageToken && storageUser) {
         setToken(storageToken)
-        setUserId(storageUserId)
+        setUser(JSON.parse(storageUser) as LoggedUser)
       }
     }
 
     getStorageData()
   }, [])
 
-  const login = useCallback(async (body: LoginBody) => {
-    const { data } = await api.post<LoginResponse>(
-      '/authentication/login',
-      body
-    )
-
-    await AsyncStorage.setItem('parrot:token', data.token)
-    await AsyncStorage.setItem('parrot:userId', data.id)
-    setToken(data.token)
-    setUserId(data.id)
-    Toast.show({
-      type: 'success',
-      text1: 'Login com sucesso'
+  const getUser = useCallback(async (token: string): Promise<LoggedUser> => {
+    const { data } = await api.get('/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
+
+    return {
+      name: data.profile.name,
+      profileId: data.profile._id,
+      userId: data.profile.user
+    }
+  }, [])
+
+  const login = useCallback(async (body: LoginBody) => {
+    try {
+      const { data } = await api.post<LoginResponse>('/security/login', {
+        user: body.email,
+        password: body.password
+      })
+
+      if (data) {
+        const loggedUser = await getUser(data.accessToken)
+        await AsyncStorage.setItem('parrot:token', data.accessToken)
+        await AsyncStorage.setItem('parrot:user', JSON.stringify(loggedUser))
+        setToken(data.accessToken)
+        setUser(loggedUser)
+      }
+
+      Toast.show({
+        type: 'success',
+        text1: 'Login com sucesso'
+      })
+    } catch (error) {
+      console.log('Auth error', error)
+    }
   }, [])
 
   const logout = useCallback(async () => {
     await AsyncStorage.removeItem('parrot:token')
-    await AsyncStorage.removeItem('parrot:userId')
+    await AsyncStorage.removeItem('parrot:user')
   }, [])
 
   return (
-    <AuthContext.Provider value={{ login, logout, token, userId }}>
+    <AuthContext.Provider value={{ login, logout, token, user }}>
       {children}
     </AuthContext.Provider>
   )

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Platform, TouchableOpacity } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik } from 'formik'
@@ -21,11 +22,13 @@ const loginUserSchema = yup.object({
 })
 
 export function Login({ navigation }: Props) {
+  const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const theme = useTheme()
 
   const onSubmit = async (data: LoginBody) => {
     try {
+      setLoading(true)
       await login(data)
       navigation.navigate('Home')
       Toast.show({
@@ -38,6 +41,8 @@ export function Login({ navigation }: Props) {
         type: 'error',
         text1: 'Credenciais inválidas'
       })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -61,7 +66,7 @@ export function Login({ navigation }: Props) {
             enableReinitialize
             onSubmit={onSubmit}
           >
-            {({ values, handleChange, handleSubmit, errors }) => (
+            {({ values, handleChange, handleSubmit, errors, isValid }) => (
               <>
                 <Input
                   label="Endereço de e-mail"
@@ -102,7 +107,11 @@ export function Login({ navigation }: Props) {
                 />
 
                 <Separator size={32} />
-                <Button text="Entrar" onPress={() => handleSubmit()} />
+                <Button
+                  text={loading ? 'Aguarde...' : 'Entrar'}
+                  onPress={() => handleSubmit()}
+                  disabled={!isValid || loading}
+                />
                 <Separator size={16} />
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Register')}

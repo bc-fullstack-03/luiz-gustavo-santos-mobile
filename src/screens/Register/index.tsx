@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Platform, TouchableOpacity } from 'react-native'
 import { Formik } from 'formik'
 import * as yup from 'yup'
@@ -29,10 +30,17 @@ const registerUserSchema = yup.object({
 })
 
 export function Register({ navigation }: Props) {
+  const [loading, setLoading] = useState(false)
   const theme = useTheme()
   const onSubmit = async (data: FromData) => {
     try {
-      await api.post('/user/create', data)
+      setLoading(true)
+      await api.post('/security/register', {
+        name: data.name,
+        user: data.email,
+        password: data.password
+      })
+
       navigation.navigate('Login')
       Toast.show({
         type: 'success',
@@ -44,6 +52,8 @@ export function Register({ navigation }: Props) {
         text1: 'Ocorreu um erro ao cadastrar.'
       })
       console.log('Register error', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -67,7 +77,7 @@ export function Register({ navigation }: Props) {
             enableReinitialize
             onSubmit={onSubmit}
           >
-            {({ values, handleChange, handleSubmit, errors }) => (
+            {({ values, handleChange, handleSubmit, errors, isValid }) => (
               <>
                 <Input
                   label="Seu nome"
@@ -126,7 +136,11 @@ export function Register({ navigation }: Props) {
                 />
 
                 <Separator size={32} />
-                <Button text="Entrar" onPress={() => handleSubmit()} />
+                <Button
+                  text={loading ? 'Cadastrando...' : 'Cadastrar'}
+                  disabled={!isValid || loading}
+                  onPress={() => handleSubmit()}
+                />
                 <Separator size={16} />
 
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>

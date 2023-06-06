@@ -7,18 +7,25 @@ export const Wrapper = styled.View`
 
 type Props = {
   hasIcon?: boolean
+  backgroundColor?: string
+  withBorder?: boolean
 }
 
 export const ContainerInput = styled.View<Props>`
-  ${({ theme, hasIcon }) => css`
+  ${({ theme, hasIcon, backgroundColor, withBorder }) => css`
     width: 100%;
     flex-direction: row;
     align-items: center;
-    background: ${theme.colors.gray900};
+    background: ${backgroundColor || theme.colors.gray900};
     border-radius: 4px;
     ${hasIcon &&
     css`
       padding-left: ${RFValue(theme.spacings.xxsmall)}px;
+    `};
+    ${withBorder &&
+    css`
+      border-width: 1px;
+      border-color: ${theme.colors.gray900};
     `}
   `}
 `
