@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Alert } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useTheme } from 'styled-components/native'
 
@@ -15,7 +16,6 @@ import { useAuth } from '../../context/AuthContext'
 import type { Profile } from '../Friends'
 
 import * as S from './styles'
-import { Alert } from 'react-native'
 
 type FullProfile = {
   _id: string
@@ -41,10 +41,10 @@ export function Profile() {
       'Essa ação não pode ser desfeita.',
       [
         {
-          text: 'Cancel'
+          text: 'Cancelar'
         },
         {
-          text: 'Confirm',
+          text: 'Confirmar',
           onPress: () => {
             api
               .delete('/users/me')

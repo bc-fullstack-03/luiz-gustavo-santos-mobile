@@ -30,13 +30,14 @@ export function Login({ navigation }: Props) {
     try {
       setLoading(true)
       await login(data)
-      navigation.navigate('Home')
+      navigation.navigate('Home', {
+        screen: 'Feed'
+      })
       Toast.show({
         type: 'success',
         text1: 'Login com sucesso'
       })
     } catch (error) {
-      console.log('Login Error', error)
       Toast.show({
         type: 'error',
         text1: 'Credenciais inválidas'

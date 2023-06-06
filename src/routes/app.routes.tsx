@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useTheme } from 'styled-components/native'
 
-import { useAuth } from '../context/AuthContext'
 import { Friends, Home, Profile } from '../screens'
 import { BottomStackParamList } from './types'
 
@@ -10,7 +9,6 @@ const { Navigator, Screen } = createBottomTabNavigator<BottomStackParamList>()
 
 export const AppRoutes = () => {
   const theme = useTheme()
-  const { user } = useAuth()
   return (
     <Navigator
       screenOptions={{
@@ -49,9 +47,6 @@ export const AppRoutes = () => {
       <Screen
         name="Profile"
         component={Profile}
-        initialParams={{
-          profileId: user?.profileId
-        }}
         options={{
           headerTitle: 'Perfil',
           tabBarIcon: ({ color, size }) => (
