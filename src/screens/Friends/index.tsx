@@ -1,38 +1,35 @@
 import { useState, useEffect } from 'react'
 import { FlatList } from 'react-native'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useTheme } from 'styled-components/native'
 
 import api from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 
 import { Button, Loading, Separator, Text, UserHeading } from '../../components'
-import { BottomStackParamList } from '../../routes/types'
 
 import * as S from './styles'
 
-export type User = {
-  id: string
+export type Profile = {
+  _id: string
   name: string
-  email: string
-  photoUrl: string | undefined
+  user: string
   followers: string[]
   following: string[]
+  createdAt: string
+  updateAt: string
 }
 
-type Props = NativeStackScreenProps<BottomStackParamList, 'Friends'>
-
-export function Friends({ navigation }: Props) {
+export function Friends() {
   const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState<User[]>([])
+  const [profiles, setProfiles] = useState<Profile[]>([])
   const theme = useTheme()
-  const { userId } = useAuth()
+  const { user } = useAuth()
 
   const getUsers = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get<User[]>('/user/all')
-      setUsers(data)
+      const { data } = await api.get<Profile[]>('/profiles')
+      setProfiles(data)
     } catch (error) {
       console.log(error)
     } finally {
@@ -40,29 +37,20 @@ export function Friends({ navigation }: Props) {
     }
   }
 
-  const checkIfUserIsFollowing = (user: User) => {
-    if (userId) {
-      return user.followers.includes(userId)
+  const checkIfUserIsFollowing = (profile: Profile) => {
+    if (user?.profileId) {
+      return profile.followers.includes(user?.profileId)
     }
 
     return false
   }
 
-  const handleFollow = async (userId: string) => {
+  const handleFollow = async (profileId: string) => {
     try {
-      await api.post(`/user/follow/${userId}`)
+      await api.post(`/profiles/${profileId}/follow`)
       getUsers()
     } catch (error) {
       console.log('Follow error', error)
-    }
-  }
-
-  const handleUnFollow = async (userId: string) => {
-    try {
-      await api.delete(`/user/unfollow/${userId}`)
-      getUsers()
-    } catch (error) {
-      console.log('UnFollow error', error)
     }
   }
 
@@ -70,7 +58,7 @@ export function Friends({ navigation }: Props) {
     getUsers()
   }, [])
 
-  const filteredList = users.filter((item) => item.id !== userId)
+  const filteredList = profiles.filter((item) => item._id !== user?.profileId)
 
   return (
     <S.Wrapper>
@@ -83,32 +71,26 @@ export function Friends({ navigation }: Props) {
               username={item.name}
               totalFollowers={item.followers.length ?? 0}
               totalFollowing={item.following.length ?? 0}
-              handleNavigation={() =>
-                navigation.navigate('Profile', {
-                  userId: item.id
-                })
-              }
             />
             <Separator size={16} />
             <Button
-              text={
-                checkIfUserIsFollowing(item) ? 'Deixar de seguir' : 'Seguir'
-              }
+              text={checkIfUserIsFollowing(item) ? 'Seguindo' : 'Seguir'}
               small
+              disabled={checkIfUserIsFollowing(item)}
               onPress={() => {
-                if (checkIfUserIsFollowing(item)) {
-                  handleUnFollow(item.id)
-                } else {
-                  handleFollow(item.id)
-                }
+                handleFollow(item._id)
               }}
             />
           </>
         )}
-        keyExtractor={({ id }) => id}
+        keyExtractor={({ _id }) => _id}
         ItemSeparatorComponent={() => <Separator size={24} />}
         ListEmptyComponent={() => (
-          <Text>Ainda não existem outros usuários cadastrados</Text>
+          <>
+            {!loading && (
+              <Text>Ainda não existem outros usuários cadastrados</Text>
+            )}
+          </>
         )}
       />
     </S.Wrapper>

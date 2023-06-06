@@ -1,6 +1,6 @@
 export type BottomStackParamList = {
   Feed: undefined
-  Profile: { userId?: string }
+  Profile: undefined
   Friends: undefined
 }
 

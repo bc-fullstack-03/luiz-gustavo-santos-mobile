@@ -49,9 +49,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const getStorageData = async () => {
       const storageToken = await AsyncStorage.getItem('parrot:token')
+      const storageUser = await AsyncStorage.getItem('parrot:user')
 
-      if (storageToken) {
+      if (storageToken && storageUser) {
         setToken(storageToken)
+        setUser(JSON.parse(storageUser) as LoggedUser)
       }
     }
 

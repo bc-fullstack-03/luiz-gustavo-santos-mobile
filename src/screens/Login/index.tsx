@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Platform, TouchableOpacity } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik } from 'formik'
@@ -12,7 +13,6 @@ import { AuthStackParamList } from '../../routes/types'
 import { Button, Input, Logo, Separator, Text } from '../../components'
 
 import * as S from './styles'
-import { useState } from 'react'
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>
 
