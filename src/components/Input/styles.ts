@@ -44,7 +44,7 @@ export const Label = styled.Text`
   ${({ theme }) => css`
     color: ${theme.colors.gray100};
     font-size: ${RFValue(theme.font.sizes.medium)}px;
-    margin-bottom: ${RFValue(theme.spacings.xxsmall / 2)}px;
+    margin-bottom: ${RFValue(theme.spacings.xxsmall)}px;
   `}
 `
 

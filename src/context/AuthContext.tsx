@@ -81,26 +81,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password: body.password
       })
 
-      if (data) {
+      if (data.accessToken) {
         const loggedUser = await getUser(data.accessToken)
         await AsyncStorage.setItem('parrot:token', data.accessToken)
         await AsyncStorage.setItem('parrot:user', JSON.stringify(loggedUser))
         setToken(data.accessToken)
         setUser(loggedUser)
+        Toast.show({
+          type: 'success',
+          text1: 'Login com sucesso'
+        })
       }
-
-      Toast.show({
-        type: 'success',
-        text1: 'Login com sucesso'
-      })
     } catch (error) {
       console.log('Auth error', error)
+      throw new Error('Ocorreu um erro ao fazer o login')
     }
   }, [])
 
   const logout = useCallback(async () => {
     await AsyncStorage.removeItem('parrot:token')
     await AsyncStorage.removeItem('parrot:user')
+    setUser(null)
+    setToken(null)
   }, [])
 
   return (
