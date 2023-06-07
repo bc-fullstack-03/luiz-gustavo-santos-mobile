@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import Ionicons from '@expo/vector-icons//Ionicons'
@@ -6,7 +7,6 @@ import ptBrLocale from 'date-fns/locale/pt-BR'
 import { useTheme } from 'styled-components/native'
 
 import { useAuth } from '../../context/AuthContext'
-
 import api from '../../services/api'
 import { Text } from '../Text'
 import { Separator } from '../Separator'
@@ -16,9 +16,13 @@ import * as S from './styles'
 
 type FeedItemProps = {
   post: Post
+  handleOpenComments: () => void
 }
 
-export const FeedItem: React.FC<FeedItemProps> = ({ post }) => {
+export const FeedItem: React.FC<FeedItemProps> = ({
+  post,
+  handleOpenComments
+}) => {
   const { user } = useAuth()
   const theme = useTheme()
 
@@ -81,7 +85,7 @@ export const FeedItem: React.FC<FeedItemProps> = ({ post }) => {
             color={liked ? theme.colors.warning : theme.colors.gray100}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleOpenComments}>
           <Ionicons name="chatbox-outline" size={24} color="#FFF" />
         </TouchableOpacity>
       </S.Footer>
