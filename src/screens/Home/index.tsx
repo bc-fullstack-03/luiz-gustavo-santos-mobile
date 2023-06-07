@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { FlatList } from 'react-native'
 
 import api from '../../services/api'
-import { FeedItem, Loading } from '../../components'
+import { FeedItem, Loading, ModalComments } from '../../components'
 
 import { Profile } from '../Friends'
 
@@ -24,6 +24,8 @@ export function Home() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(0)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [postId, setPostId] = useState<string | null>(null)
 
   const loadFeed = async () => {
     try {
@@ -46,6 +48,16 @@ export function Home() {
     setPage(page + 1)
   }
 
+  const handleOpenComments = (id: string) => {
+    setModalOpen(true)
+    setPostId(id)
+  }
+
+  const handleClose = () => {
+    setModalOpen(false)
+    setPostId(null)
+  }
+
   useEffect(() => {
     loadFeed()
   }, [page])
@@ -57,10 +69,16 @@ export function Home() {
         showsVerticalScrollIndicator={false}
         data={posts}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <FeedItem post={item} />}
+        renderItem={({ item }) => (
+          <FeedItem
+            post={item}
+            handleOpenComments={() => handleOpenComments(item._id)}
+          />
+        )}
         onEndReached={loadMoreItems}
         onEndReachedThreshold={0.3}
       />
+      <ModalComments open={modalOpen} onClose={handleClose} postId={postId} />
     </S.Wrapper>
   )
 }
