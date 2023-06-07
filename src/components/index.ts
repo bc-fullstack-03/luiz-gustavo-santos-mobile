@@ -1,6 +1,7 @@
 export { Avatar } from './Avatar'
 export { Button } from './Button'
 export { Container } from './Container'
+export { FeedItem } from './FeedItem'
 export { Input } from './Input'
 export { Loading } from './Loading'
 export { Logo } from './Logo'
