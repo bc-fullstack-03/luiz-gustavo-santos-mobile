@@ -12,7 +12,7 @@ O backend/api utilizado neste projeto se encontra neste [repositório](https://g
 
 ## Iniciando a aplicação
 
-Crie um arquivo .env e adicione a variável de ambiente igual ao aquivo .env.example e adicone o endereço de ip da máquina que está rodando a aplicação backend.
+Crie um arquivo .env e adicione uma variável de ambiente igual ao aquivo [.env.example](https://github.com/bc-fullstack-03/luiz-gustavo-santos-mobile/blob/main/.env.example) e adicone o endereço de ip da máquina que está rodando a aplicação backend.
 
 Instale as dependencias
 ```shell
