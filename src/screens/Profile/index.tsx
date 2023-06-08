@@ -7,6 +7,7 @@ import api from '../../services/api'
 
 import {
   Avatar,
+  Button,
   Loading,
   ModalUpdateUser,
   Separator,
@@ -113,6 +114,8 @@ export function Profile() {
             </Text>
           </S.Button>
         </S.ButtonsContainer>
+        <Separator size={40} />
+        <Button text="Sair" onPress={logout} />
       </S.Wrapper>
       <ModalUpdateUser
         open={modalVisible}

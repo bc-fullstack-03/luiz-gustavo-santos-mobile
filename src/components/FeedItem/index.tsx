@@ -17,11 +17,13 @@ import * as S from './styles'
 type FeedItemProps = {
   post: Post
   handleOpenComments: () => void
+  handleDelete: () => void
 }
 
 export const FeedItem: React.FC<FeedItemProps> = ({
   post,
-  handleOpenComments
+  handleOpenComments,
+  handleDelete
 }) => {
   const { user } = useAuth()
   const theme = useTheme()
@@ -63,7 +65,11 @@ export const FeedItem: React.FC<FeedItemProps> = ({
           </S.BoxName>
         </S.Box>
 
-        <Ionicons name="trash-outline" size={20} color="#FFF" />
+        {user?.profileId === post.profile._id && (
+          <TouchableOpacity onPress={handleDelete}>
+            <Ionicons name="trash-outline" size={20} color="#FFF" />
+          </TouchableOpacity>
+        )}
       </S.Header>
 
       <Separator size={16} />

@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react'
-import { FlatList } from 'react-native'
+import { Alert, FlatList } from 'react-native'
 
-import api from '../../services/api'
-import { FeedItem, Loading, ModalComments } from '../../components'
+import {
+  FeedItem,
+  Loading,
+  ModalComments,
+  ModalCreatePost,
+  Text
+} from '../../components'
 
 import { Profile } from '../Friends'
 
 import * as S from './styles'
+import { usePost } from '../../context/Post'
 
 export type Post = {
   _id: string
@@ -27,14 +33,13 @@ export function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [postId, setPostId] = useState<string | null>(null)
 
+  const { getPosts, closeModalCreatePost, modalCreatePostVisible, deletePost } =
+    usePost()
+
   const loadFeed = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get<Post[]>('feed', {
-        params: {
-          page
-        }
-      })
+      const data = await getPosts(page)
 
       setPosts([...posts, ...data])
     } catch (error) {
@@ -58,6 +63,36 @@ export function Home() {
     setPostId(null)
   }
 
+  const onRefresh = async () => {
+    try {
+      setLoading(true)
+      const data = await getPosts(0)
+
+      setPosts(data)
+    } catch (error) {
+      setPosts([])
+    } finally {
+      setPage(0)
+      setLoading(false)
+    }
+  }
+
+  const handleDeletePost = (postId: string) => {
+    Alert.alert('Deseja deletar este post?', '', [
+      {
+        text: 'Cancelar'
+      },
+      {
+        text: 'Confirmar',
+        onPress: () =>
+          deletePost(postId).then(() => {
+            const newPosts = posts.filter((item) => item._id !== postId)
+            setPosts(newPosts)
+          })
+      }
+    ])
+  }
+
   useEffect(() => {
     loadFeed()
   }, [page])
@@ -65,6 +100,7 @@ export function Home() {
   return (
     <S.Wrapper>
       {loading && <Loading />}
+      {!posts.length && <Text>Nenhum post por aqui.</Text>}
       <FlatList
         showsVerticalScrollIndicator={false}
         data={posts}
@@ -73,12 +109,18 @@ export function Home() {
           <FeedItem
             post={item}
             handleOpenComments={() => handleOpenComments(item._id)}
+            handleDelete={() => handleDeletePost(item._id)}
           />
         )}
         onEndReached={loadMoreItems}
-        onEndReachedThreshold={0.3}
+        onEndReachedThreshold={0.1}
       />
       <ModalComments open={modalOpen} onClose={handleClose} postId={postId} />
+      <ModalCreatePost
+        onClose={closeModalCreatePost}
+        open={modalCreatePostVisible}
+        onRefreshFeed={onRefresh}
+      />
     </S.Wrapper>
   )
 }

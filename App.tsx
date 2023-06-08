@@ -8,16 +8,19 @@ import { AuthProvider } from './src/context/AuthContext'
 import { Routes } from './src/routes'
 
 import theme from './src/styles/theme'
+import { PostProvider } from './src/context/Post'
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <ThemeProvider theme={theme}>
-          <StatusBar style="light" translucent />
-          <Routes />
-          <Toast />
-        </ThemeProvider>
+        <PostProvider>
+          <ThemeProvider theme={theme}>
+            <StatusBar style="light" translucent />
+            <Routes />
+            <Toast />
+          </ThemeProvider>
+        </PostProvider>
       </AuthProvider>
     </SafeAreaProvider>
   )

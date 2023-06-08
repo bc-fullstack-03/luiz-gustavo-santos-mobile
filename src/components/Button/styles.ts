@@ -10,13 +10,18 @@ export const Button = styled.TouchableOpacity<{
     width: 100%;
     align-items: center;
     justify-content: center;
-    background-color: ${disabled ? theme.colors.gray500 : theme.colors.primary};
+    background-color: ${theme.colors.primary};
     border-radius: 4px;
     ${small &&
     css`
       width: 60%;
       padding: ${RFValue(theme.spacings.xxsmall)}px;
     `}
+
+    ${disabled &&
+    css`
+      background-color: ${theme.colors.primary}90;
+    `};
   `}
 `
 
