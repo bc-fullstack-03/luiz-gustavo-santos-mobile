@@ -4,17 +4,23 @@ import { useTheme } from 'styled-components/native'
 
 import { Friends, Home, Profile } from '../screens'
 import { BottomStackParamList } from './types'
+import { Pressable } from 'react-native'
+import { usePost } from '../context/Post'
 
 const { Navigator, Screen } = createBottomTabNavigator<BottomStackParamList>()
 
 export const AppRoutes = () => {
   const theme = useTheme()
+  const { openModalCreatePost } = usePost()
   return (
     <Navigator
       screenOptions={{
         tabBarShowLabel: false,
         headerStyle: {
           backgroundColor: theme.colors.mainBg
+        },
+        headerRightContainerStyle: {
+          marginRight: 16
         },
         headerTintColor: theme.colors.white,
         tabBarStyle: {
@@ -31,6 +37,11 @@ export const AppRoutes = () => {
           headerTitle: 'Feed',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
+          ),
+          headerRight: ({ tintColor }) => (
+            <Pressable onPress={openModalCreatePost}>
+              <Ionicons name="pencil-outline" size={24} color={tintColor} />
+            </Pressable>
           )
         }}
       />
