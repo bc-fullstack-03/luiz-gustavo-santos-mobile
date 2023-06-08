@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { API_URL } from 'react-native-dotenv'
 
 const api = axios.create({
-  baseURL: 'http://192.168.2.100:4000/v1',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json'
