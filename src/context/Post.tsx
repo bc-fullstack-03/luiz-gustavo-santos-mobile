@@ -41,22 +41,15 @@ export const PostProvider = ({ children }: PostProviderProps) => {
   }, [])
 
   const createPost = useCallback(async (formData: FormData) => {
-    try {
-      await api.post('/posts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      Toast.show({
-        text1: 'Post criado com sucesso',
-        type: 'success'
-      })
-    } catch (error) {
-      Toast.show({
-        text1: 'Ocorreu um erro ao criar o post',
-        type: 'error'
-      })
-    }
+    await api.post('/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    Toast.show({
+      text1: 'Post criado com sucesso',
+      type: 'success'
+    })
   }, [])
 
   const deletePost = useCallback(async (postId: string) => {
