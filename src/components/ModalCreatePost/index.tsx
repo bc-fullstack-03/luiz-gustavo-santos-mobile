@@ -30,7 +30,7 @@ type ImageFile = {
 type ModalCreatePostProps = {
   open: boolean
   onClose: () => void
-  onRefreshFeed: () => Promise<void>
+  onRefreshFeed: () => void
 }
 
 const postSchema = yup.object({
@@ -80,6 +80,13 @@ export const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
         formData.append('file', file as unknown as Blob)
       }
 
+      if (!isChecked && !values.description) {
+        return Toast.show({
+          text1: 'Insira uma descrição',
+          type: 'error'
+        })
+      }
+
       formData.append('title', values.title)
       formData.append('description', values.description || '')
 
@@ -90,6 +97,10 @@ export const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
       closeModalCreatePost()
     } catch (error) {
       console.log('CreatePost', error)
+      Toast.show({
+        text1: 'Ocorreu um erro ao criar o post',
+        type: 'error'
+      })
     }
   }
   return (

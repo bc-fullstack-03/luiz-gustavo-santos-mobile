@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Alert, FlatList } from 'react-native'
+import { Alert, FlatList, RefreshControl } from 'react-native'
 
+import { usePost } from '../../context/Post'
 import {
   FeedItem,
   Loading,
@@ -9,10 +10,9 @@ import {
   Text
 } from '../../components'
 
-import { Profile } from '../Friends'
+import type { Profile } from '../Friends'
 
 import * as S from './styles'
-import { usePost } from '../../context/Post'
 
 export type Post = {
   _id: string
@@ -29,6 +29,7 @@ export type Post = {
 export function Home() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [page, setPage] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
   const [postId, setPostId] = useState<string | null>(null)
@@ -41,7 +42,7 @@ export function Home() {
       setLoading(true)
       const data = await getPosts(page)
 
-      setPosts([...posts, ...data])
+      setPosts(data)
     } catch (error) {
       setPosts([])
     } finally {
@@ -49,8 +50,12 @@ export function Home() {
     }
   }
 
-  const loadMoreItems = () => {
-    setPage(page + 1)
+  const loadMoreItems = async () => {
+    const newPage = page + 1
+    const data = await getPosts(newPage)
+    setPosts([...posts, ...data])
+
+    setPage(newPage)
   }
 
   const handleOpenComments = (id: string) => {
@@ -58,22 +63,22 @@ export function Home() {
     setPostId(id)
   }
 
-  const handleClose = () => {
+  const handleCloseComments = () => {
     setModalOpen(false)
     setPostId(null)
   }
 
   const onRefresh = async () => {
     try {
-      setLoading(true)
+      setIsRefreshing(true)
       const data = await getPosts(0)
 
       setPosts(data)
     } catch (error) {
-      setPosts([])
+      console.log('OnRefresh error', error)
     } finally {
       setPage(0)
-      setLoading(false)
+      setIsRefreshing(false)
     }
   }
 
@@ -86,8 +91,7 @@ export function Home() {
         text: 'Confirmar',
         onPress: () =>
           deletePost(postId).then(() => {
-            const newPosts = posts.filter((item) => item._id !== postId)
-            setPosts(newPosts)
+            onRefresh()
           })
       }
     ])
@@ -95,7 +99,7 @@ export function Home() {
 
   useEffect(() => {
     loadFeed()
-  }, [page])
+  }, [])
 
   return (
     <S.Wrapper>
@@ -112,10 +116,17 @@ export function Home() {
             handleDelete={() => handleDeletePost(item._id)}
           />
         )}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
         onEndReached={loadMoreItems}
         onEndReachedThreshold={0.1}
       />
-      <ModalComments open={modalOpen} onClose={handleClose} postId={postId} />
+      <ModalComments
+        open={modalOpen}
+        onClose={handleCloseComments}
+        postId={postId}
+      />
       <ModalCreatePost
         onClose={closeModalCreatePost}
         open={modalCreatePostVisible}
